@@ -1,0 +1,28 @@
+name: "Terraform"
+
+on:
+  push: 
+    branches: ["main"]
+    
+jobs: 
+  terraform:
+    name: "Terraform Apply"
+    runs-on: "ubuntu-latest"
+    steps:
+          
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+          -var="private_key=${{ secrets.ATLAS_PRIVATE_KEY }}"
+          -var="public_key=${{ secrets.ATLAS_PUBLIC_KEY }}"
+          -var="atlas_org_id=${{ secrets.ATLAS_ORD_ID }}" 
+          -var="atlas_user_name=${{ secrets.ATLAS_USER_NAME }}" 
+          -var="atlas_user_password=${{ secrets.ATLAS_USER_PASSWORD }}"
+
+      - name: Terraform Apply 
+        run: terraform apply -auto-approve tfplan
